@@ -29,7 +29,7 @@ public class MensagemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novaMensagem);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<Mensagem> atualizarMensagem(@PathVariable Long id, @RequestBody Mensagem mensagemAtualizada) {
         Mensagem mensagemExistente = mensagemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mensagem não encontrada"));
@@ -38,13 +38,13 @@ public class MensagemController {
         return ResponseEntity.ok(mensagemSalva);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("deletar/{id}")
     public ResponseEntity<Void> deletarMensagemPorId(@PathVariable Long id) {
         mensagemRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/todos")
     public ResponseEntity<Void> deletarTodasMensagens() {
         mensagemRepository.deleteAll();
         return ResponseEntity.noContent().build();

@@ -23,13 +23,13 @@ public class AvaliacaoController {
         return avaliacaoRepository.findAll();
     }
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping("/salvar")
     public ResponseEntity<Avaliacao> criarAvaliacao(@RequestBody Avaliacao avaliacao) {
         Avaliacao novaAvaliacao = avaliacaoRepository.save(avaliacao);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaAvaliacao);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<Avaliacao> atualizarAvaliacao(@PathVariable Long id, @RequestBody Avaliacao avaliacaoAtualizada) {
         Avaliacao avaliacaoExistente = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
@@ -38,13 +38,13 @@ public class AvaliacaoController {
         return ResponseEntity.ok(avaliacaoSalva);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deletarAvaliacaoPorId(@PathVariable Long id) {
         avaliacaoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/todos")
     public ResponseEntity<Void> deletarTodasAvaliacoes() {
         avaliacaoRepository.deleteAll();
         return ResponseEntity.noContent().build();

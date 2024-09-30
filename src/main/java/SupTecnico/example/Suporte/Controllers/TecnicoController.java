@@ -49,7 +49,7 @@ public class TecnicoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tecnicoSalvo);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<Tecnico> atualizarTecnico(@PathVariable Long id, @RequestBody Tecnico tecnicoAtualizado) {
         Tecnico tecnicoExistente = tecnicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Técnico não encontrado"));
@@ -62,13 +62,13 @@ public class TecnicoController {
         return ResponseEntity.ok(tecnicoSalvo);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("deletar/{id}")
     public ResponseEntity<Void> deletarTecnicoPorId(@PathVariable Long id) {
         tecnicoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/todos")
     public ResponseEntity<Void> deletarTodosTecnicos() {
         tecnicoRepository.deleteAll();
         return ResponseEntity.noContent().build();
