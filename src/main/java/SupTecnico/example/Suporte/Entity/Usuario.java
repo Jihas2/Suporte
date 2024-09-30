@@ -17,6 +17,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Não pode estar em Branco")
     private String nome;
 
     private String cpf;

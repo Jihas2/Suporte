@@ -18,6 +18,7 @@ public class Tecnico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank("")
     private String nome;
 
     private String cpf;

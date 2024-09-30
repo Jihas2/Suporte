@@ -4,58 +4,73 @@ import SupTecnico.example.Suporte.Entity.Tecnico;
 import SupTecnico.example.Suporte.Entity.Usuario;
 import SupTecnico.example.Suporte.Repositories.TecnicoRepository;
 import SupTecnico.example.Suporte.Repositories.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 public class TecnicoService {
 
-    private final TecnicoRepository tecnicoRepository;
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private TecnicoRepository tecnicoRepository;
 
-    public TecnicoService(TecnicoRepository tecnicoRepository, UsuarioRepository usuarioRepository) {
-        this.tecnicoRepository = tecnicoRepository;
-        this.usuarioRepository = usuarioRepository;
-    }
-
-    public List<Tecnico> listarTecnicos() {
-        return tecnicoRepository.findAll();
-    }
-
-    public Tecnico buscarTecnicoPorId(Long id) {
-        return tecnicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Técnico não encontrado"));
-    }
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public Tecnico criarTecnico(Tecnico tecnico) {
-        if (tecnico.getUsuario() == null || tecnico.getUsuario().getId() == null) {
-            throw new RuntimeException("Usuário inválido");
+        try {
+            Usuario usuarioExistente = usuarioRepository.findById(tecnico.getUsuario().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+            tecnico.setUsuario(usuarioExistente);
+            return tecnicoRepository.save(tecnico);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao criar técnico: " + e.getMessage(), e);
         }
+    }
 
-        Usuario usuarioExistente = usuarioRepository.findById(tecnico.getUsuario().getId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        tecnico.setUsuario(usuarioExistente);
-        return tecnicoRepository.save(tecnico);
+    public Tecnico findById(Long id) {
+        return tecnicoRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Técnico com o ID " + id + " não encontrado"));
     }
 
     public Tecnico atualizarTecnico(Long id, Tecnico tecnicoAtualizado) {
-        Tecnico tecnicoExistente = tecnicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Técnico não encontrado"));
+        try {
+            Tecnico tecnicoExistente = findById(id);
+            tecnicoExistente.setNome(tecnicoAtualizado.getNome());
+            tecnicoExistente.setCpf(tecnicoAtualizado.getCpf());
+            tecnicoExistente.setDataNasc(tecnicoAtualizado.getDataNasc());
+            return tecnicoRepository.save(tecnicoExistente);
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao atualizar técnico: " + e.getMessage(), e);
+        }
+    }
 
-        tecnicoExistente.setNome(tecnicoAtualizado.getNome());
-        tecnicoExistente.setCpf(tecnicoAtualizado.getCpf());
-        tecnicoExistente.setDataNasc(tecnicoAtualizado.getDataNasc());
-
-        return tecnicoRepository.save(tecnicoExistente);
+    public List<Tecnico> listarTecnicos() {
+        try {
+            return tecnicoRepository.findAll();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao listar técnicos: " + e.getMessage(), e);
+        }
     }
 
     public void deletarTecnicoPorId(Long id) {
-        tecnicoRepository.deleteById(id);
+        try {
+            tecnicoRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao deletar técnico: " + e.getMessage(), e);
+        }
     }
 
     public void deletarTodosTecnicos() {
-        tecnicoRepository.deleteAll();
+        try {
+            tecnicoRepository.deleteAll();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao deletar todos os técnicos: " + e.getMessage(), e);
+        }
     }
 }
