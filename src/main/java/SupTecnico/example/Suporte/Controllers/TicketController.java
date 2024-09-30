@@ -25,5 +25,24 @@ public class TicketController {
     public Ticket criarTicket(@RequestBody Ticket ticket) {
         return ticketRepository.save(ticket);
     }
+
+    @PutMapping("/{id}")
+    public Ticket atualizarTicket(@PathVariable Long id, @RequestBody Ticket ticketAtualizado) {
+        Ticket ticketExistente = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
+        ticketExistente.setDescricao(ticketAtualizado.getDescricao());
+        ticketExistente.setCategoria(ticketAtualizado.getCategoria());
+        return ticketRepository.save(ticketExistente);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarTicketPorId(@PathVariable Long id) {
+        ticketRepository.deleteById(id);
+    }
+
+    @DeleteMapping
+    public void deletarTodosTickets() {
+        ticketRepository.deleteAll();
+    }
 }
 

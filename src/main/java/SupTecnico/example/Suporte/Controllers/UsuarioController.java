@@ -6,6 +6,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import SupTecnico.example.Suporte.Entity.Usuario;
+import SupTecnico.example.Suporte.Repositories.UsuarioRepository;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -48,4 +54,10 @@ public class UsuarioController {
     public void deletarUsuario(@PathVariable Long id) {
         usuarioRepository.deleteById(id);
     }
+
+    @DeleteMapping
+    public void deletarTodosUsuarios() {
+        usuarioRepository.deleteAll();
+    }
 }
+

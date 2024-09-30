@@ -52,8 +52,14 @@ public class TecnicoController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletarTecnico(@PathVariable Long id) {
+    public void deletarTecnicoPorId(@PathVariable Long id) {
         tecnicoRepository.deleteById(id);
     }
+
+    @DeleteMapping
+    public void deletarTodosTecnicos() {
+        tecnicoRepository.deleteAll();
+    }
 }
+
 
