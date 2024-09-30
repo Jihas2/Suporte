@@ -28,4 +28,3 @@ public class Ticket {
         this.id = id;
     }
 }
-

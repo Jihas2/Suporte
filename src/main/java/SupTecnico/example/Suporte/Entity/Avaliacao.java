@@ -26,4 +26,3 @@ public class Avaliacao {
         this.id = id;
     }
 }
-
