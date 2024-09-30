@@ -24,6 +24,8 @@ public class Usuario {
     @Temporal(TemporalType.DATE)
     private Date dataNasc;
 
+    private String email; // Novo campo de email
+
     @OneToMany(mappedBy = "usuario")
     @JsonIgnore
     private List<Tecnico> tecnicos;

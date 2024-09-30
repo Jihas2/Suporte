@@ -18,7 +18,19 @@ public class TecnicoController {
         this.tecnicoRepository = tecnicoRepository;
     }
 
-    @PostMapping
+    @GetMapping
+    public List<Tecnico> listarTecnicos() {
+        return tecnicoRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Tecnico> buscarTecnicoPorId(@PathVariable Long id) {
+        Tecnico tecnico = tecnicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Técnico não encontrado"));
+        return ResponseEntity.ok(tecnico);
+    }
+
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<Tecnico> criarTecnico(@RequestBody Tecnico tecnico) {
         if (tecnico.getUsuario() == null || tecnico.getUsuario().getId() == null) {
             return ResponseEntity.badRequest().build();
@@ -28,19 +40,8 @@ public class TecnicoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tecnicoSalvo);
     }
 
-    @GetMapping
-    public List<Tecnico> listarTecnicos() {
-        return tecnicoRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Tecnico buscarTecnicoPorId(@PathVariable Long id) {
-        return tecnicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Técnico não encontrado"));
-    }
-
     @PutMapping("/{id}")
-    public Tecnico atualizarTecnico(@PathVariable Long id, @RequestBody Tecnico tecnicoAtualizado) {
+    public ResponseEntity<Tecnico> atualizarTecnico(@PathVariable Long id, @RequestBody Tecnico tecnicoAtualizado) {
         Tecnico tecnicoExistente = tecnicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Técnico não encontrado"));
 
@@ -48,18 +49,24 @@ public class TecnicoController {
         tecnicoExistente.setCpf(tecnicoAtualizado.getCpf());
         tecnicoExistente.setDataNasc(tecnicoAtualizado.getDataNasc());
 
-        return tecnicoRepository.save(tecnicoExistente);
+        Tecnico tecnicoSalvo = tecnicoRepository.save(tecnicoExistente);
+        return ResponseEntity.ok(tecnicoSalvo);
     }
 
     @DeleteMapping("/{id}")
-    public void deletarTecnicoPorId(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarTecnicoPorId(@PathVariable Long id) {
         tecnicoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public void deletarTodosTecnicos() {
+    public ResponseEntity<Void> deletarTodosTecnicos() {
         tecnicoRepository.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
-
-

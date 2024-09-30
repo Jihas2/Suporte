@@ -6,12 +6,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import SupTecnico.example.Suporte.Entity.Usuario;
-import SupTecnico.example.Suporte.Repositories.UsuarioRepository;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -46,6 +40,7 @@ public class UsuarioController {
         usuarioExistente.setNome(usuarioAtualizado.getNome());
         usuarioExistente.setCpf(usuarioAtualizado.getCpf());
         usuarioExistente.setDataNasc(usuarioAtualizado.getDataNasc());
+        usuarioExistente.setEmail(usuarioAtualizado.getEmail()); // Atualiza o email
 
         return usuarioRepository.save(usuarioExistente);
     }
@@ -60,4 +55,3 @@ public class UsuarioController {
         usuarioRepository.deleteAll();
     }
 }
-

@@ -2,6 +2,8 @@ package SupTecnico.example.Suporte.Controllers;
 
 import SupTecnico.example.Suporte.Entity.Mensagem;
 import SupTecnico.example.Suporte.Repositories.MensagemRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,27 +23,35 @@ public class MensagemController {
         return mensagemRepository.findAll();
     }
 
-    @PostMapping
-    public Mensagem criarMensagem(@RequestBody Mensagem mensagem) {
-        return mensagemRepository.save(mensagem);
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<Mensagem> criarMensagem(@RequestBody Mensagem mensagem) {
+        Mensagem novaMensagem = mensagemRepository.save(mensagem);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaMensagem);
     }
 
     @PutMapping("/{id}")
-    public Mensagem atualizarMensagem(@PathVariable Long id, @RequestBody Mensagem mensagemAtualizada) {
+    public ResponseEntity<Mensagem> atualizarMensagem(@PathVariable Long id, @RequestBody Mensagem mensagemAtualizada) {
         Mensagem mensagemExistente = mensagemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mensagem não encontrada"));
         mensagemExistente.setConteudo(mensagemAtualizada.getConteudo());
-        return mensagemRepository.save(mensagemExistente);
+        Mensagem mensagemSalva = mensagemRepository.save(mensagemExistente);
+        return ResponseEntity.ok(mensagemSalva);
     }
 
     @DeleteMapping("/{id}")
-    public void deletarMensagemPorId(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarMensagemPorId(@PathVariable Long id) {
         mensagemRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public void deletarTodasMensagens() {
+    public ResponseEntity<Void> deletarTodasMensagens() {
         mensagemRepository.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
-

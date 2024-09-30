@@ -2,6 +2,8 @@ package SupTecnico.example.Suporte.Controllers;
 
 import SupTecnico.example.Suporte.Entity.Avaliacao;
 import SupTecnico.example.Suporte.Repositories.AvaliacaoRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,27 +23,35 @@ public class AvaliacaoController {
         return avaliacaoRepository.findAll();
     }
 
-    @PostMapping
-    public Avaliacao criarAvaliacao(@RequestBody Avaliacao avaliacao) {
-        return avaliacaoRepository.save(avaliacao);
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<Avaliacao> criarAvaliacao(@RequestBody Avaliacao avaliacao) {
+        Avaliacao novaAvaliacao = avaliacaoRepository.save(avaliacao);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaAvaliacao);
     }
 
     @PutMapping("/{id}")
-    public Avaliacao atualizarAvaliacao(@PathVariable Long id, @RequestBody Avaliacao avaliacaoAtualizada) {
+    public ResponseEntity<Avaliacao> atualizarAvaliacao(@PathVariable Long id, @RequestBody Avaliacao avaliacaoAtualizada) {
         Avaliacao avaliacaoExistente = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
         avaliacaoExistente.setNota(avaliacaoAtualizada.getNota());
-        return avaliacaoRepository.save(avaliacaoExistente);
+        Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacaoExistente);
+        return ResponseEntity.ok(avaliacaoSalva);
     }
 
     @DeleteMapping("/{id}")
-    public void deletarAvaliacaoPorId(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarAvaliacaoPorId(@PathVariable Long id) {
         avaliacaoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public void deletarTodasAvaliacoes() {
+    public ResponseEntity<Void> deletarTodasAvaliacoes() {
         avaliacaoRepository.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
-
