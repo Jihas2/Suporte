@@ -23,7 +23,7 @@ public class MensagemController {
         return mensagemRepository.findAll();
     }
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping("/salvar")
     public ResponseEntity<Mensagem> criarMensagem(@RequestBody Mensagem mensagem) {
         Mensagem novaMensagem = mensagemRepository.save(mensagem);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaMensagem);

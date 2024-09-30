@@ -27,7 +27,7 @@ public class UsuarioController {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
-    @PostMapping
+    @PostMapping("/salvar")
     public Usuario criarUsuario(@RequestBody Usuario usuario) {
         return usuarioRepository.save(usuario);
     }

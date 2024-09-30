@@ -23,7 +23,7 @@ public class TicketController {
         return ticketRepository.findAll();
     }
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping("/salvar")
     public ResponseEntity<Ticket> criarTicket(@RequestBody Ticket ticket) {
         Ticket ticketSalvo = ticketRepository.save(ticket);
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketSalvo);

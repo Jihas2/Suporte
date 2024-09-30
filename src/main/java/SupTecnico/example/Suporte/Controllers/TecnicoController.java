@@ -1,7 +1,9 @@
 package SupTecnico.example.Suporte.Controllers;
 
 import SupTecnico.example.Suporte.Entity.Tecnico;
+import SupTecnico.example.Suporte.Entity.Usuario;
 import SupTecnico.example.Suporte.Repositories.TecnicoRepository;
+import SupTecnico.example.Suporte.Repositories.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,11 @@ import java.util.List;
 public class TecnicoController {
 
     private final TecnicoRepository tecnicoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public TecnicoController(TecnicoRepository tecnicoRepository) {
+    public TecnicoController(TecnicoRepository tecnicoRepository, UsuarioRepository usuarioRepository) {
         this.tecnicoRepository = tecnicoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping
@@ -30,11 +34,16 @@ public class TecnicoController {
         return ResponseEntity.ok(tecnico);
     }
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping("/salvar")
     public ResponseEntity<Tecnico> criarTecnico(@RequestBody Tecnico tecnico) {
         if (tecnico.getUsuario() == null || tecnico.getUsuario().getId() == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
+
+        Usuario usuarioExistente = usuarioRepository.findById(tecnico.getUsuario().getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        tecnico.setUsuario(usuarioExistente);
 
         Tecnico tecnicoSalvo = tecnicoRepository.save(tecnico);
         return ResponseEntity.status(HttpStatus.CREATED).body(tecnicoSalvo);
